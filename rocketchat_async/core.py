@@ -48,14 +48,14 @@ class RocketChat:
     async def get_channels(self):
         return await GetChannels.call(self._dispatcher)
 
-    async def send_message(self, context, text):
-        await SendMessage.call(self._dispatcher, context, text)
+    async def send_message(self, text, channel_id, thread_id=None):
+        await SendMessage.call(self._dispatcher, text, channel_id, thread_id)
 
     async def send_reaction(self, orig_msg_id, emoji):
         await SendReaction.call(orig_msg_id, emoji)
 
-    async def send_typing_event(self, context, is_typing):
-        await SendTypingEvent.call(self._dispatcher, context, False)
+    async def send_typing_event(self, channel_id, is_typing):
+        await SendTypingEvent.call(self._dispatcher, channel_id, False)
 
     async def subscribe_to_channel_messages(self, channel_id, callback):
         sub_id = await SubscribeToChannelMessages.call(self._dispatcher,

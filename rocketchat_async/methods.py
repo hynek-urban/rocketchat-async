@@ -107,10 +107,9 @@ class SendMessage(RealtimeRequest):
         return msg
 
     @classmethod
-    async def call(cls, dispatcher, context, msg_text):
+    async def call(cls, dispatcher, msg_text, channel_id, thread_id=None):
         msg_id = cls._get_new_id()
-        msg = cls._get_request_msg(msg_id, context.channel_id, msg_text,
-                                   context.thread_id)
+        msg = cls._get_request_msg(msg_id, channel_id, msg_text, thread_id)
         await dispatcher.call_method(msg, msg_id)
 
 
@@ -153,9 +152,9 @@ class SendTypingEvent(RealtimeRequest):
         }
 
     @classmethod
-    async def call(cls, dispatcher, context, is_typing):
+    async def call(cls, dispatcher, channel_id, is_typing):
         msg_id = cls._get_new_id()
-        msg = cls._get_request_msg(msg_id, context.channel_id, is_typing)
+        msg = cls._get_request_msg(msg_id, channel_id, is_typing)
         await dispatcher.call_method(msg, msg_id)
 
 
