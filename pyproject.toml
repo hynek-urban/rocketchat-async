@@ -1,0 +1,11 @@
+[project]
+name = "rocketchat-async"
+description = "asyncio-based Python wrapper for the Rocket.Chat Realtime API."
+version = "0.1.0"
+requires-python = ">=3.7"
+authors = [
+    { name = "Hynek Urban", email = "hynek.urban@gmail.com" }
+]
+dependencies = [
+    "websockets ~= 10.4"
+]
