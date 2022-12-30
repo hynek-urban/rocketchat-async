@@ -11,8 +11,9 @@ class RocketChat:
     """Represents a connection to RocketChat, exposing the API."""
 
     def __init__(self):
-        self._dispatcher = Dispatcher(verbose=True)
         self.user_id = None
+        self.username = None
+        self._dispatcher = Dispatcher(verbose=False)
 
     async def start(self, address, username, password):
         ws_connected = asyncio.get_event_loop().create_future()
@@ -22,6 +23,7 @@ class RocketChat:
         # Connect and login.
         await self._connect()
         self.user_id = await self._login(username, password)
+        self.username = username
 
     async def run_forever(self):
         await self.dispatch_task
@@ -59,7 +61,7 @@ class RocketChat:
 
     async def send_typing_event(self, channel_id, is_typing):
         """Send the `typing` event to a channel."""
-        await SendTypingEvent.call(self._dispatcher, channel_id, self.user_id,
+        await SendTypingEvent.call(self._dispatcher, channel_id, self.username,
                                    is_typing)
 
     async def subscribe_to_channel_messages(self, channel_id, callback):
