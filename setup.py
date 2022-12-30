@@ -9,9 +9,12 @@ setup(
     version="0.1.0",
     description=description,
     long_description=long_description,
+    url="https://github.com/hynek-urban/rocketchat-async",
+    license="MIT",
     author="Hynek Urban",
     author_email="hynek.urban@gmail.com",
     packages=["rocketchat_async"],
     package_dir={"rocketchat_async": "rocketchat_async"},
+    python_requires=">=3.7",
     install_requires=["websockets==10.4"],
 )

@@ -1,6 +1,8 @@
 [project]
 name = "rocketchat-async"
 description = "asyncio-based Python wrapper for the Rocket.Chat Realtime API."
+description-file="README.md"
+license="MIT"
 version = "0.1.0"
 requires-python = ">=3.7"
 authors = [
@@ -9,3 +11,12 @@ authors = [
 dependencies = [
     "websockets ~= 10.4"
 ]
+
+[project.urls]
+homepage = "https://github.com/hynek-urban/rocketchat-async"
+documentation = "https://github.com/hynek-urban/rocketchat-async"
+repository = "https://github.com/hynek-urban/rocketchat-async"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
