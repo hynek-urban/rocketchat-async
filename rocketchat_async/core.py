@@ -55,7 +55,8 @@ class RocketChat:
         await SendReaction.call(orig_msg_id, emoji)
 
     async def send_typing_event(self, channel_id, is_typing):
-        await SendTypingEvent.call(self._dispatcher, channel_id, False)
+        await SendTypingEvent.call(self._dispatcher, channel_id, self.user_id,
+                                   is_typing)
 
     async def subscribe_to_channel_messages(self, channel_id, callback):
         sub_id = await SubscribeToChannelMessages.call(self._dispatcher,

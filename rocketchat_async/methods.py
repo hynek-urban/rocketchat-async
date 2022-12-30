@@ -60,7 +60,7 @@ class Login(RealtimeRequest):
 
 
 class GetChannels(RealtimeRequest):
-    """Get a list of channels Varel is currently member of."""
+    """Get a list of channels user is currently member of."""
 
     @staticmethod
     def _get_request_msg(msg_id):
@@ -139,22 +139,22 @@ class SendTypingEvent(RealtimeRequest):
     """Send the `typing` event to a channel."""
 
     @staticmethod
-    def _get_request_msg(msg_id, channel_id, is_typing):
+    def _get_request_msg(msg_id, channel_id, user_id, is_typing):
         return {
             "msg": "method",
             "method": "stream-notify-room",
             "id": msg_id,
             "params": [
                 f'{channel_id}/typing',
-                "varel.bot",  # TODO?
+                user_id,
                 is_typing
             ]
         }
 
     @classmethod
-    async def call(cls, dispatcher, channel_id, is_typing):
+    async def call(cls, dispatcher, channel_id, user_id, is_typing):
         msg_id = cls._get_new_id()
-        msg = cls._get_request_msg(msg_id, channel_id, is_typing)
+        msg = cls._get_request_msg(msg_id, channel_id, user_id, is_typing)
         await dispatcher.call_method(msg, msg_id)
 
 

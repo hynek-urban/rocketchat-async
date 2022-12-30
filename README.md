@@ -7,7 +7,7 @@ asyncio-based Python wrapper for the Rocket.Chat Realtime API.
 Use this library if you:
 
 - want to integrate with Rocket.Chat from Python
-- are using [asyncio](https://docs.python.org/3/library/asyncio.html) to drive your application
+- are using [asyncio](https://docs.python.org/3/library/asyncio.html) to drive your code
 - want to use Rocket.Chat's efficient websockets-based Realtime API
 
 ## Example usage
@@ -30,7 +30,7 @@ async def subscribe_to_messages(rc, channel):
 async def main(address, username, password):
     rc = RocketChat()
     await rc.start(address, username, password)
-    # One possible workflow consists of two steps:
+    # A possible workflow consists of two steps:
     #
     # 1. Set up the desired callbacks...
     for channel_id, channel_type in await rc.get_channels():
