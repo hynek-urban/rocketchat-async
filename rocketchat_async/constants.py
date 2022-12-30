@@ -1,17 +1,21 @@
 from enum import Enum
 
 
-class MessageQualifier(Enum):
+# Note: the mix-in classes should be eventually replaced by StrEnum.
+
+
+class MessageQualifier(str, Enum):
     """Lists special message types."""
     REMOVE_USER = "ru"
 
 
-class ChannelQualifier(Enum):
+class ChannelQualifier(str, Enum):
     """Lists special message types."""
     DIRECT_MESSAGE = "d"
+    PRIVATE = "p"
 
 
-class Emoji(Enum):
+class Emoji(str, Enum):
     """Selection of emojis that are subjectively "most fun"."""
     GRIN = ':grin:'
     SWEAT_SMILE = ':sweat_smile:'
