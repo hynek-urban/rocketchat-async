@@ -64,13 +64,14 @@ needs). I am open to both feature requests as well as pull requests.
     - Subscribe to all messages in the given channel. Returns the subscription
       ID.
     - The provided callback should accept six arguments: `channel_id`,
-      `sender_id`, `msg_id`, `thread_id`, `msg_text` and `qualifier`. The
+      `sender_id`, `msg_id`, `thread_id`, `msg_text` and `msg_qualifier`. The
       qualifier can help to determine if e.g. the message is a system message
       about the user being removed from the channel.
 - `RocketChat.subscribe_to_channel_changes(callback)`
     - Subscribe to all changes in channels. Returns the subscription
       ID.
     - The provided callback should accept two arguments: `channel_id` and
-      `channel_type`.
+      `channel_qualifier`. The qualifier helps to determine e.g. if it's
+      a direct message or a normal room.
 - `RocketChat.unsubscribe(subscription_id)`
     - Cancel a subscription.
