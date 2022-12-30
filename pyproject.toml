@@ -1,22 +1,20 @@
-[project]
+[tool.poetry]
 name = "rocketchat-async"
+version = "0.1.1"
 description = "asyncio-based Python wrapper for the Rocket.Chat Realtime API."
-description-file="README.md"
-license="MIT"
-version = "0.1.0"
-requires-python = ">=3.7"
-authors = [
-    { name = "Hynek Urban", email = "hynek.urban@gmail.com" }
-]
-dependencies = [
-    "websockets ~= 10.4"
-]
-
-[project.urls]
+authors = ["Hynek Urban <hynek.urban@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "rocketchat_async"}]
 homepage = "https://github.com/hynek-urban/rocketchat-async"
 documentation = "https://github.com/hynek-urban/rocketchat-async"
 repository = "https://github.com/hynek-urban/rocketchat-async"
 
+[tool.poetry.dependencies]
+python = ">=3.7"
+websockets = "^10.4"
+
+
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
