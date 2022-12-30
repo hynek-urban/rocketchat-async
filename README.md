@@ -26,11 +26,6 @@ def handle_message(channel_id, sender_id, msg_id, thread_id, msg, qualifier):
     print(msg)
 
 
-async def subscribe_to_messages(rc, channel):
-    """Subscribe to a channel message."""
-    await rc.subscribe_to_channel_messages(channel, handle_message)
-
-
 async def main(address, username, password):
     rc = RocketChat()
     await rc.start(address, username, password)
@@ -38,7 +33,7 @@ async def main(address, username, password):
     #
     # 1. Set up the desired callbacks...
     for channel_id, channel_type in await rc.get_channels():
-        await subscribe_to_messages(rc, channel_id)
+        await rc.subscribe_to_channel_messages(channel_id, handle_message)
     # 2. ...and then simply wait for the registered events.
     await rc.run_forever()
 
