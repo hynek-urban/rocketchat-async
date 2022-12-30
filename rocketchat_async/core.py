@@ -46,27 +46,44 @@ class RocketChat:
     # --> Public API methods start here. <--
 
     async def get_channels(self):
+        """Get a list of channels user is currently member of."""
         return await GetChannels.call(self._dispatcher)
 
     async def send_message(self, text, channel_id, thread_id=None):
+        """Send a text message to a channel."""
         await SendMessage.call(self._dispatcher, text, channel_id, thread_id)
 
     async def send_reaction(self, orig_msg_id, emoji):
+        """Send a reaction to a specific message."""
         await SendReaction.call(orig_msg_id, emoji)
 
     async def send_typing_event(self, channel_id, is_typing):
+        """Send the `typing` event to a channel."""
         await SendTypingEvent.call(self._dispatcher, channel_id, self.user_id,
                                    is_typing)
 
     async def subscribe_to_channel_messages(self, channel_id, callback):
+        """
+        Subscribe to all messages in the given channel.
+
+        Returns the subscription ID.
+
+        """
         sub_id = await SubscribeToChannelMessages.call(self._dispatcher,
                                                        channel_id, callback)
         return sub_id
 
     async def subscribe_to_channel_changes(self, callback):
+        """
+        Subscribe to all changes in channels.
+
+        Returns the subscription ID.
+
+        """
         sub_id = await SubscribeToChannelChanges.call(self._dispatcher,
                                                       self.user_id, callback)
         return sub_id
 
     async def unsubscribe(self, subscription_id):
+        """Cancel a subscription."""
         await Unsubscribe.call(self._dispatcher, subscription_id)
