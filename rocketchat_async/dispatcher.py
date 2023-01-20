@@ -65,6 +65,8 @@ class Dispatcher:
         elif parsed['msg'] == 'ping':
             asyncio.create_task(self.call_method({'msg': 'pong'}))
         elif parsed['msg'] == 'error':
-            raise Exception(msg)  # TODO - more specific class.
+            if self._verbose:
+                print(f'Remote error: {msg}')
         else:
-            raise Exception(f'Unknown message: {msg}')
+            if self._verbose:
+                print(f'Unknown message: {msg}')
