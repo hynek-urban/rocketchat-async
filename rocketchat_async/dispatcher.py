@@ -1,12 +1,13 @@
 import asyncio
 import json
+from typing import Any
 
 
 class Dispatcher:
     """Match websockets calls with responses and manage callbacks."""
 
     def __init__(self, verbose=False):
-        self._websocket = None
+        self._websocket: Any = None
         self._futures = {}  # ID -> asyncio Future (resolved with the response)
         self._verbose = verbose
 
@@ -22,11 +23,12 @@ class Dispatcher:
     async def call_method(self, msg, msg_id=None):
         if self._verbose:
             print(f'Outgoing: {msg}')
-        if (msg_id is not None):
+        if (msg_id is None):
+            await self._websocket.send(json.dumps(msg))
+        else:
             fut = asyncio.get_event_loop().create_future()
             self._futures[msg_id] = fut
-        await self._websocket.send(json.dumps(msg))
-        if (msg_id is not None):
+            await self._websocket.send(json.dumps(msg))
             return await fut
 
     async def create_subscription(self, msg, msg_id, callback):
