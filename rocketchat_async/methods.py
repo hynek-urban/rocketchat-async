@@ -217,8 +217,11 @@ class SubscribeToChannelChanges(RealtimeRequest):
     @staticmethod
     def _wrap(callback):
         def fn(msg):
-            channel_id = msg['fields']['args'][1]['_id']
-            channel_type = msg['fields']['args'][1]['t']
+            payload = msg['fields']['args']
+            if payload[0] == 'removed':
+                return  # Nothing else to do - channel has just been deleted.
+            channel_id = payload[1]['_id']
+            channel_type = payload[1]['t']
             return callback(channel_id, channel_type)
         return fn
 
