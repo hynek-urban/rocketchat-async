@@ -10,6 +10,12 @@ from rocketchat_async.methods import Connect, Login, GetChannels, SendMessage,\
 class RocketChat:
     """Represents a connection to RocketChat, exposing the API."""
 
+    class ConnectionClosed(Exception):
+        pass
+
+    class ConnectCallFailed(Exception):
+        pass
+
     def __init__(self):
         self.user_id = None
         self.username = None
@@ -19,14 +25,24 @@ class RocketChat:
         ws_connected = asyncio.get_event_loop().create_future()
         ws_connection = self._start(address, ws_connected)
         self._ws_connection_task = asyncio.create_task(ws_connection)
-        await ws_connected
+        try:
+            await ws_connected
+        except (OSError, websockets.InvalidMessage) as e:
+            # Exceptions that can arise during temporary network glitches or
+            # outages on the remote side.
+            # See also https://github.com/aaugustin/websockets/issues/593
+            raise self.ConnectCallFailed(e)
+
         # Connect and login.
         await self._connect()
         self.user_id = await self._login(username, password)
         self.username = username
 
     async def run_forever(self):
-        await self.dispatch_task
+        try:
+            await self.dispatch_task
+        except websockets.ConnectionClosed as e:
+            raise self.ConnectionClosed(e)
 
     async def _start(self, address, connected_fut):
         try:
@@ -37,7 +53,8 @@ class RocketChat:
                 # Finally, create the ever-running dispatcher loop.
                 await self.dispatch_task
         except Exception as e:
-            connected_fut.set_exception(e)
+            if not connected_fut.done():
+                connected_fut.set_exception(e)
 
     async def _connect(self):
         await Connect.call(self._dispatcher)
