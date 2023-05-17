@@ -64,7 +64,7 @@ def handle_message(channel_id, sender_id, msg_id, thread_id, msg, qualifier):
     print(msg)
 
 
-async def main(address, username, password):
+async def main(address, username, token):
     while True:
         try:
             rc = RocketChat()
