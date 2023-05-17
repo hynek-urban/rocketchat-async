@@ -26,6 +26,34 @@ class Connect(RealtimeRequest):
         await dispatcher.call_method(cls.REQUEST_MSG)
 
 
+class Resume(RealtimeRequest):
+    """Log in to the service."""
+
+    @staticmethod
+    def _get_request_msg(msg_id, token):
+        return {
+            "msg": "method",
+            "method": "login",
+            "id": msg_id,
+            "params": [
+                {
+                    "resume": token,
+                }
+            ]
+        }
+
+    @staticmethod
+    def _parse(response):
+        return response['result']['id'], 
+
+    @classmethod
+    async def call(cls, dispatcher, token):
+        msg_id = cls._get_new_id()
+        msg = cls._get_request_msg(msg_id, token)
+        response = await dispatcher.call_method(msg, msg_id)
+        return cls._parse(response)
+
+
 class Login(RealtimeRequest):
     """Log in to the service."""
 

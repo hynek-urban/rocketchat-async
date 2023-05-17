@@ -2,7 +2,7 @@ import asyncio
 import websockets
 
 from rocketchat_async.dispatcher import Dispatcher
-from rocketchat_async.methods import Connect, Login, GetChannels, SendMessage,\
+from rocketchat_async.methods import Connect, Login, Resume, GetChannels, SendMessage,\
         SendReaction, SendTypingEvent, SubscribeToChannelMessages,\
         SubscribeToChannelChanges, Unsubscribe
 
@@ -38,6 +38,24 @@ class RocketChat:
         self.user_id = await self._login(username, password)
         self.username = username
 
+    async def resume(self, address, username, token):
+        ws_connected = asyncio.get_event_loop().create_future()
+        ws_connection = self._start(address, ws_connected)
+        self._ws_connection_task = asyncio.create_task(ws_connection)
+        try:
+            await ws_connected
+        except (OSError, websockets.InvalidMessage) as e:
+            # Exceptions that can arise during temporary network glitches or
+            # outages on the remote side.
+            # See also https://github.com/aaugustin/websockets/issues/593
+            raise self.ConnectCallFailed(e)
+
+        # Connect and login.
+        await self._connect()
+        self.user_id = await self._resume(token)
+        print('user_id', self.user_id)
+        self.username = username
+
     async def run_forever(self):
         try:
             await self.dispatch_task
@@ -61,6 +79,9 @@ class RocketChat:
 
     async def _login(self, username, password):
         return await Login.call(self._dispatcher, username, password)
+
+    async def _resume(self, token):
+        return await Resume.call(self._dispatcher, token)
 
     # --> Public API methods start here. <--
 
