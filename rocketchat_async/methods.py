@@ -27,7 +27,7 @@ class Connect(RealtimeRequest):
 
 
 class Resume(RealtimeRequest):
-    """Log in to the service."""
+    """Log in to the service with a token."""
 
     @staticmethod
     def _get_request_msg(msg_id, token):
@@ -44,7 +44,7 @@ class Resume(RealtimeRequest):
 
     @staticmethod
     def _parse(response):
-        return response['result']['id'], 
+        return response['result']['id'],
 
     @classmethod
     async def call(cls, dispatcher, token):
