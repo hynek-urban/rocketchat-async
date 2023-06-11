@@ -53,7 +53,6 @@ class RocketChat:
         # Connect and login.
         await self._connect()
         self.user_id = await self._resume(token)
-        print('user_id', self.user_id)
         self.username = username
 
     async def run_forever(self):
