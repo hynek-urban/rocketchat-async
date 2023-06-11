@@ -44,7 +44,7 @@ class Resume(RealtimeRequest):
 
     @staticmethod
     def _parse(response):
-        return response['result']['id'],
+        return response['result']['id']
 
     @classmethod
     async def call(cls, dispatcher, token):
