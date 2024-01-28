@@ -22,7 +22,8 @@ import random
 from rocketchat_async import RocketChat
 
 
-def handle_message(channel_id, sender_id, msg_id, thread_id, msg, qualifier):
+def handle_message(channel_id, sender_id, msg_id, thread_id, msg, qualifier,
+                   unread):
     """Simply print the message that arrived."""
     print(msg)
 
