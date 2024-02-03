@@ -23,7 +23,7 @@ from rocketchat_async import RocketChat
 
 
 def handle_message(channel_id, sender_id, msg_id, thread_id, msg, qualifier,
-                   unread):
+                   unread, re_received):
     """Simply print the message that arrived."""
     print(msg)
 
@@ -84,11 +84,13 @@ Send the "typing" event to a channel.
 
 Subscribe to all messages in the given channel. Returns the subscription ID.
 
-The provided callback should accept six arguments: `channel_id`,
-`sender_id`, `msg_id`, `thread_id`, `msg_text` and
-`msg_qualifier`. The qualifier can help to determine if e.g. the
+The provided callback should accept eight arguments: `channel_id`,
+`sender_id`, `msg_id`, `thread_id`, `msg_text`, `msg_qualifier`
+ and `re_received`. The qualifier can help to determine if e.g. the
 message is a system message about the user being removed from
-the channel.
+the channel.  The `re_received` flag assists in distinguishing 
+whether the message has been received again as a result of 
+thread replies, or if it is a new message post.
 
 #### `RocketChat.subscribe_to_channel_changes(callback)`
 
