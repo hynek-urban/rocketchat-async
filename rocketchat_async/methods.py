@@ -215,8 +215,9 @@ class SubscribeToChannelMessages(RealtimeRequest):
             msg = event['msg']
             qualifier = event.get('t')
             unread = event.get('unread', False)
+            repeated = bool(event.get('replies'))
             return callback(channel_id, sender_id, msg_id, thread_id, msg,
-                            qualifier, unread)
+                            qualifier, unread, repeated)
         return fn
 
     @classmethod
