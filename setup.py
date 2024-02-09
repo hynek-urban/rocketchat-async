@@ -6,7 +6,7 @@ with open("README.md", "r") as fin:
 
 setup(
     name="rocketchat-async",
-    version="2.0.0",
+    version="3.0.0",
     description=description,
     long_description=long_description,
     url="https://github.com/hynek-urban/rocketchat-async",
