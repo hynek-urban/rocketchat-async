@@ -2,6 +2,8 @@
 
 asyncio-based Python wrapper for the Rocket.Chat Realtime API.
 
+Supported Rocket.Chat versions: 6.x. (The library might also work or partially work with other versions.)
+
 ## When should you use this library?
 
 Use this library if you:
