@@ -96,9 +96,9 @@ class RocketChat:
         """Send a reaction to a specific message."""
         await SendReaction.call(self._dispatcher, orig_msg_id, emoji)
 
-    async def send_typing_event(self, channel_id):
+    async def send_typing_event(self, channel_id, thread_id=None):
         """Send the `typing` event to a channel."""
-        await SendTypingEvent.call(self._dispatcher, channel_id, self.username)
+        await SendTypingEvent.call(self._dispatcher, channel_id, self.username, thread_id)
 
     async def subscribe_to_channel_messages(self, channel_id, callback):
         """

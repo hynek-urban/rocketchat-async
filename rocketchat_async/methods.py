@@ -167,8 +167,8 @@ class SendTypingEvent(RealtimeRequest):
     """Send the `typing` event to a channel."""
 
     @staticmethod
-    def _get_request_msg(msg_id, channel_id, username):
-        return {
+    def _get_request_msg(msg_id, channel_id, username, thread_id=None):
+        msg = {
             "msg": "method",
             "method": "stream-notify-room",
             "id": msg_id,
@@ -179,11 +179,14 @@ class SendTypingEvent(RealtimeRequest):
                 {}
             ]
         }
+        if(thread_id):
+            msg["params"][-1]["tmid"] = thread_id
+        return msg
 
     @classmethod
-    async def call(cls, dispatcher, channel_id, username):
+    async def call(cls, dispatcher, channel_id, username, thread_id=None):
         msg_id = cls._get_new_id()
-        msg = cls._get_request_msg(msg_id, channel_id, username)
+        msg = cls._get_request_msg(msg_id, channel_id, username, thread_id)
         await dispatcher.call_method(msg, msg_id)
 
 
