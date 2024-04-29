@@ -78,9 +78,9 @@ Send a text message to a channel.
 
 Send a reaction to a specific message.
 
-#### `RocketChat.send_typing_event(channel_id)`
+#### `RocketChat.send_typing_event(channel_id, thread_id=None)`
 
-Send the "typing" event to a channel.
+Send the "typing" event to a channel or to a specified thread within that channel.
 
 #### `RocketChat.subscribe_to_channel_messages(channel_id, callback)`
 
