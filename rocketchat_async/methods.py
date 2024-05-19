@@ -112,6 +112,40 @@ class GetChannels(RealtimeRequest):
         return cls._parse(response)
 
 
+class SubscribeToWorkspaceChannelActivity(RealtimeRequest):
+    """Subscribe to changes in channel membership."""
+
+    @staticmethod
+    def _get_request_msg(msg_id, user_id):
+        return {
+            "msg": "sub",
+            "id": msg_id,
+            "name": "stream-notify-user",
+            "params": [
+                f'{user_id}/rooms-changed',
+                False
+            ]
+        }
+
+    @staticmethod
+    def _wrap(callback):
+        def fn(msg):
+            payload = msg['fields']['args']
+            if payload[0] == 'removed':
+                channel_id = payload[1]['_id']
+                callback(channel_id, 'removed')
+            elif payload[0] == 'inserted':
+                channel_id = payload[1]['_id']
+                callback(channel_id, 'inserted')
+        return fn
+
+    @classmethod
+    async def call(cls, dispatcher, user_id, callback):
+        msg_id = cls._get_new_id()
+        msg = cls._get_request_msg(msg_id, user_id)
+        await dispatcher.create_subscription(msg, msg_id, cls._wrap(callback))
+        return msg_id  # Return the ID to allow for later unsubscription.
+
 class SendMessage(RealtimeRequest):
     """Send a text message to a channel."""
 

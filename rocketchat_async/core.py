@@ -122,6 +122,14 @@ class RocketChat:
                                                       self.user_id, callback)
         return sub_id
 
+    async def subscribe_to_workspace_channel_activity(self, user_id, callback):
+    """
+    Subscribe to changes in channel membership.
+
+    Returns the subscription ID.
+    """
+    return await SubscribeToWorkspaceChannelActivity.call(self._dispatcher, user_id, callback)
+
     async def unsubscribe(self, subscription_id):
         """Cancel a subscription."""
         await Unsubscribe.call(self._dispatcher, subscription_id)
