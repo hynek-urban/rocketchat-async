@@ -4,7 +4,7 @@ import websockets
 from rocketchat_async.dispatcher import Dispatcher
 from rocketchat_async.methods import Connect, Login, Resume, GetChannels, SendMessage,\
         SendReaction, SendTypingEvent, SubscribeToChannelMessages,\
-        SubscribeToChannelChanges, Unsubscribe
+        SubscribeToChannelChanges, SubscribeToWorkspaceChannelActivity, Unsubscribe
 
 
 class RocketChat:
@@ -122,13 +122,13 @@ class RocketChat:
                                                       self.user_id, callback)
         return sub_id
 
-    async def subscribe_to_workspace_channel_activity(self, user_id, callback):
-    """
-    Subscribe to changes in channel membership.
+    async def subscribe_to_workspace_channel_activity(self, callback):
+        """
+        Subscribe to changes in channel membership.
 
-    Returns the subscription ID.
-    """
-    return await SubscribeToWorkspaceChannelActivity.call(self._dispatcher, user_id, callback)
+        Returns the subscription ID.
+        """
+        return await SubscribeToWorkspaceChannelActivity.call(self._dispatcher, self.user_id, callback)
 
     async def unsubscribe(self, subscription_id):
         """Cancel a subscription."""
