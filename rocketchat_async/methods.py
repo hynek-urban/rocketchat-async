@@ -131,12 +131,20 @@ class SubscribeToWorkspaceChannelActivity(RealtimeRequest):
     def _wrap(callback):
         def fn(msg):
             payload = msg['fields']['args']
+            print("======== GET PAYLOAD ========")
+            print(payload[0])
+            print("---")
+            print(payload[1])
+            print("=======")
             if payload[0] == 'removed':
                 channel_id = payload[1]['_id']
-                callback(channel_id, 'removed')
+                callback(channel_id, 'removed') #currently not working
             elif payload[0] == 'inserted':
                 channel_id = payload[1]['_id']
                 callback(channel_id, 'inserted')
+            else:
+                channel_id = payload[1]['_id']
+                callback(channel_id, payload[0])
         return fn
 
     @classmethod
