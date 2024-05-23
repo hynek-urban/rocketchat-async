@@ -250,13 +250,20 @@ class SubscribeToChannelChanges(RealtimeRequest):
     @staticmethod
     def _wrap(callback):
         def fn(msg):
+            print(msg)
             payload = msg['fields']['args']
+            info = payload[1]
             if payload[0] == 'removed':
                 return  # Nothing else to do - channel has just been deleted.
-            event_type = payload[0]
+            elif payload[0] == 'inserted':
+                event_type = 'joined'
+            elif 'file' in payload[1]["lastMessage"]:
+                event_type = 'file_added'
+            else:
+                event_type = 'other'
             channel_id = payload[1]['_id']
             channel_type = payload[1]['t']
-            return callback(channel_id, channel_type, event_type)
+            return callback(channel_id, channel_type, event_type, info)
         return fn
 
     @classmethod
