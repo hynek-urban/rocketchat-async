@@ -111,7 +111,6 @@ class GetChannels(RealtimeRequest):
         response = await dispatcher.call_method(msg, msg_id)
         return cls._parse(response)
 
-
 class SendMessage(RealtimeRequest):
     """Send a text message to a channel."""
 
@@ -252,11 +251,18 @@ class SubscribeToChannelChanges(RealtimeRequest):
     def _wrap(callback):
         def fn(msg):
             payload = msg['fields']['args']
+            info = payload[1]
             if payload[0] == 'removed':
                 return  # Nothing else to do - channel has just been deleted.
+            elif payload[0] == 'inserted':
+                event_type = 'joined'
+            elif 'file' in payload[1]["lastMessage"]:
+                event_type = 'file_added'
+            else:
+                event_type = 'other'
             channel_id = payload[1]['_id']
             channel_type = payload[1]['t']
-            return callback(channel_id, channel_type)
+            return callback(channel_id, channel_type, event_type, info)
         return fn
 
     @classmethod

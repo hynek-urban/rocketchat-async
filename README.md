@@ -98,9 +98,11 @@ thread replies, or if it is a new message post.
 
 Subscribe to all changes in channels. Returns the subscription ID.
 
-The provided callback should accept two arguments: `channel_id`
-and `channel_qualifier`. The qualifier helps to determine e.g.
+The provided callback should accept four arguments: `channel_id`
+, `channel_qualifier` , `event_type`, and `info`. The qualifier helps to determine e.g.
 if it's a direct message or a normal room.
+The event_type indicates the kind of event that occurred.
+For instance, the event_type can be "joined", "file_added", or "other".
 
 #### `RocketChat.unsubscribe(subscription_id)`
 
