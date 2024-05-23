@@ -282,33 +282,3 @@ class Unsubscribe(RealtimeRequest):
     async def call(cls, dispatcher, subscription_id):
         msg = cls._get_request_msg(subscription_id)
         await dispatcher.call_method(msg)
-
-class SubscribeToUserActivity(RealtimeRequest):
-    """Subscribe to user login and logout activities."""
-
-    @staticmethod
-    def _get_request_msg(msg_id):
-        return {
-            "msg": "sub",
-            "id": msg_id,
-            "name": "stream-notify-logged",
-            "params": [
-                "user-status",
-                False
-            ]
-        }
-
-    @staticmethod
-    def _wrap(callback):
-        def fn(msg):
-            event_type = msg['fields']['eventName']
-            user_status = msg['fields']['args'][0]
-            callback(event_type, user_status)
-        return fn
-
-    @classmethod
-    async def call(cls, dispatcher, callback):
-        msg_id = cls._get_new_id()
-        msg = cls._get_request_msg(msg_id)
-        await dispatcher.create_subscription(msg, msg_id, cls._wrap(callback))
-        return msg_id
