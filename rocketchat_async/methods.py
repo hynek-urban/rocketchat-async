@@ -250,7 +250,6 @@ class SubscribeToChannelChanges(RealtimeRequest):
     @staticmethod
     def _wrap(callback):
         def fn(msg):
-            print(msg)
             payload = msg['fields']['args']
             info = payload[1]
             if payload[0] == 'removed':
