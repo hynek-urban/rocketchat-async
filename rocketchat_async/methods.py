@@ -111,49 +111,6 @@ class GetChannels(RealtimeRequest):
         response = await dispatcher.call_method(msg, msg_id)
         return cls._parse(response)
 
-
-class SubscribeToWorkspaceChannelActivity(RealtimeRequest):
-    """Subscribe to changes in channel membership."""
-
-    @staticmethod
-    def _get_request_msg(msg_id, user_id):
-        return {
-            "msg": "sub",
-            "id": msg_id,
-            "name": "stream-notify-user",
-            "params": [
-                f'{user_id}/rooms-changed',
-                False
-            ]
-        }
-
-    @staticmethod
-    def _wrap(callback):
-        def fn(msg):
-            payload = msg['fields']['args']
-            print("======== GET PAYLOAD ========")
-            print(payload[0])
-            print("---")
-            print(payload[1])
-            print("=======")
-            if payload[0] == 'removed':
-                channel_id = payload[1]['_id']
-                callback(channel_id, 'removed') #currently not working
-            elif payload[0] == 'inserted':
-                channel_id = payload[1]['_id']
-                callback(channel_id, 'inserted')
-            else:
-                channel_id = payload[1]['_id']
-                callback(channel_id, payload[0])
-        return fn
-
-    @classmethod
-    async def call(cls, dispatcher, user_id, callback):
-        msg_id = cls._get_new_id()
-        msg = cls._get_request_msg(msg_id, user_id)
-        await dispatcher.create_subscription(msg, msg_id, cls._wrap(callback))
-        return msg_id  # Return the ID to allow for later unsubscription.
-
 class SendMessage(RealtimeRequest):
     """Send a text message to a channel."""
 
@@ -296,9 +253,10 @@ class SubscribeToChannelChanges(RealtimeRequest):
             payload = msg['fields']['args']
             if payload[0] == 'removed':
                 return  # Nothing else to do - channel has just been deleted.
+            event_type = payload[0]
             channel_id = payload[1]['_id']
             channel_type = payload[1]['t']
-            return callback(channel_id, channel_type)
+            return callback(channel_id, channel_type, event_type)
         return fn
 
     @classmethod
@@ -324,3 +282,33 @@ class Unsubscribe(RealtimeRequest):
     async def call(cls, dispatcher, subscription_id):
         msg = cls._get_request_msg(subscription_id)
         await dispatcher.call_method(msg)
+
+class SubscribeToUserActivity(RealtimeRequest):
+    """Subscribe to user login and logout activities."""
+
+    @staticmethod
+    def _get_request_msg(msg_id):
+        return {
+            "msg": "sub",
+            "id": msg_id,
+            "name": "stream-notify-logged",
+            "params": [
+                "user-status",
+                False
+            ]
+        }
+
+    @staticmethod
+    def _wrap(callback):
+        def fn(msg):
+            event_type = msg['fields']['eventName']
+            user_status = msg['fields']['args'][0]
+            callback(event_type, user_status)
+        return fn
+
+    @classmethod
+    async def call(cls, dispatcher, callback):
+        msg_id = cls._get_new_id()
+        msg = cls._get_request_msg(msg_id)
+        await dispatcher.create_subscription(msg, msg_id, cls._wrap(callback))
+        return msg_id
