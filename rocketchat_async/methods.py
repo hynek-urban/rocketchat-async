@@ -204,8 +204,11 @@ class SendTypingEvent(RealtimeRequest):
         await dispatcher.call_method(msg, msg_id)
 
 
-class SubscribeToChannelMessages(RealtimeRequest):
-    """Subscribe to all messages in the given channel."""
+class SubscribeToChannelMessagesRaw(RealtimeRequest):
+    """Subscribe to all messages in the given channel.
+
+    Passes the raw message object to the callback.
+    """
 
     @staticmethod
     def _get_request_msg(msg_id, channel_id):
@@ -225,6 +228,26 @@ class SubscribeToChannelMessages(RealtimeRequest):
     @staticmethod
     def _wrap(callback):
         def fn(msg):
+            event = msg["fields"]["args"][0]  # TODO: This looks suspicious.
+            return callback(event)
+
+        return fn
+
+    @classmethod
+    async def call(cls, dispatcher, channel_id, callback):
+        # TODO: document the expected interface of the callback.
+        msg_id = cls._get_new_id()
+        msg = cls._get_request_msg(msg_id, channel_id)
+        await dispatcher.create_subscription(msg, msg_id, cls._wrap(callback))
+        return msg_id  # Return the ID to allow for later unsubscription.
+
+
+class SubscribeToChannelMessages(SubscribeToChannelMessagesRaw):
+    """Subscribe to all messages in the given channel."""
+
+    @staticmethod
+    def _wrap(callback):
+        def fn(msg):
             event = msg['fields']['args'][0]  # TODO: This looks suspicious.
             msg_id = event['_id']
             channel_id = event['rid']
@@ -237,14 +260,6 @@ class SubscribeToChannelMessages(RealtimeRequest):
             return callback(channel_id, sender_id, msg_id, thread_id, msg,
                             qualifier, unread, repeated)
         return fn
-
-    @classmethod
-    async def call(cls, dispatcher, channel_id, callback):
-        # TODO: document the expected interface of the callback.
-        msg_id = cls._get_new_id()
-        msg = cls._get_request_msg(msg_id, channel_id)
-        await dispatcher.create_subscription(msg, msg_id, cls._wrap(callback))
-        return msg_id  # Return the ID to allow for later unsubscription.
 
 
 class SubscribeToChannelChanges(RealtimeRequest):
