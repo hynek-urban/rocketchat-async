@@ -87,8 +87,11 @@ class Login(RealtimeRequest):
         return cls._parse(response)
 
 
-class GetChannels(RealtimeRequest):
-    """Get a list of channels user is currently member of."""
+class GetChannelsRaw(RealtimeRequest):
+    """Get a list of channels user is currently member of.
+
+    Returns the complete channel objects.
+    """
 
     @staticmethod
     def _get_request_msg(msg_id):
@@ -101,8 +104,7 @@ class GetChannels(RealtimeRequest):
 
     @staticmethod
     def _parse(response):
-        # Return channel IDs and channel types.
-        return [(r['_id'], r['t']) for r in response['result']]
+        return response['result']
 
     @classmethod
     async def call(cls, dispatcher):
@@ -110,6 +112,18 @@ class GetChannels(RealtimeRequest):
         msg = cls._get_request_msg(msg_id)
         response = await dispatcher.call_method(msg, msg_id)
         return cls._parse(response)
+
+
+class GetChannels(GetChannelsRaw):
+    """Get a list of channels user is currently member of.
+
+    Returns a list of (channel id, channel type) pairs.
+    """
+
+    @classmethod
+    def _parse(cls, response):
+        # Return channel IDs and channel types.
+        return [(r['_id'], r['t']) for r in super()._parse(response)]
 
 
 class SendMessage(RealtimeRequest):
