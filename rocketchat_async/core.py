@@ -2,9 +2,9 @@ import asyncio
 import websockets
 
 from rocketchat_async.dispatcher import Dispatcher
-from rocketchat_async.methods import Connect, Login, Resume, GetChannels, SendMessage,\
-        SendReaction, SendTypingEvent, SubscribeToChannelMessages,\
-        SubscribeToChannelChanges, Unsubscribe
+from rocketchat_async.methods import Connect, Login, Resume, GetChannels, GetChannelsRaw,\
+        SendMessage, SendReaction, SendTypingEvent, SubscribeToChannelMessages,\
+        SubscribeToChannelMessagesRaw, SubscribeToChannelChanges, Unsubscribe
 
 
 class RocketChat:
@@ -85,8 +85,18 @@ class RocketChat:
     # --> Public API methods start here. <--
 
     async def get_channels(self):
-        """Get a list of channels user is currently member of."""
+        """Get a list of channels user is currently member of.
+
+        Returns a list of (channel id, channel type) pairs.
+        """
         return await GetChannels.call(self._dispatcher)
+
+    async def get_channels_raw(self):
+        """Get a list of channels user is currently member of.
+
+        Returns a list of channel objects.
+        """
+        return await GetChannelsRaw.call(self._dispatcher)
 
     async def send_message(self, text, channel_id, thread_id=None):
         """Send a text message to a channel."""
@@ -108,6 +118,19 @@ class RocketChat:
 
         """
         sub_id = await SubscribeToChannelMessages.call(self._dispatcher,
+                                                       channel_id, callback)
+        return sub_id
+
+    async def subscribe_to_channel_messages_raw(self, channel_id, callback):
+        """
+        Subscribe to all messages in the given channel.
+
+        The callback is passed the full message object as provided by the API.
+
+        Returns the subscription ID.
+
+        """
+        sub_id = await SubscribeToChannelMessagesRaw.call(self._dispatcher,
                                                        channel_id, callback)
         return sub_id
 
