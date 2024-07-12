@@ -102,6 +102,18 @@ The provided callback should accept two arguments: `channel_id`
 and `channel_qualifier`. The qualifier helps to determine e.g.
 if it's a direct message or a normal room.
 
+#### `RocketChat.subscribe_to_channel_changes_raw(callback)`
+
+Like `RocketChat.subscribe_to_channel_changes` except the callback gets passed the raw message object coming from the API.
+
+#### `RocketChat.subscribe_to_channel_messages_raw(channel_id, callback)`
+
+Like `RocketChat.subscribe_to_channel_messages` except the callback gets passed the raw message object coming from the API.
+
+#### `RocketChat.get_channels_raw(callback)`
+
+Like `RocketChat.get_channels` except the callback gets passed the list of raw channel objects coming from the API.
+
 #### `RocketChat.unsubscribe(subscription_id)`
 
 Cancel a subscription.
