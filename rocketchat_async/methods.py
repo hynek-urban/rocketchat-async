@@ -88,9 +88,11 @@ class Login(RealtimeRequest):
 
 
 class GetChannelsRaw(RealtimeRequest):
-    """Get a list of channels user is currently member of.
+    """
+    Get a list of channels user is currently member of.
 
     Returns the complete channel objects.
+
     """
 
     @staticmethod
@@ -115,9 +117,11 @@ class GetChannelsRaw(RealtimeRequest):
 
 
 class GetChannels(GetChannelsRaw):
-    """Get a list of channels user is currently member of.
+    """
+    Get a list of channels user is currently member of.
 
     Returns a list of (channel id, channel type) pairs.
+
     """
 
     @classmethod
@@ -205,9 +209,11 @@ class SendTypingEvent(RealtimeRequest):
 
 
 class SubscribeToChannelMessagesRaw(RealtimeRequest):
-    """Subscribe to all messages in the given channel.
+    """
+    Subscribe to all messages in the given channel.
 
     Passes the raw message object to the callback.
+
     """
 
     @staticmethod
@@ -262,8 +268,13 @@ class SubscribeToChannelMessages(SubscribeToChannelMessagesRaw):
         return fn
 
 
-class SubscribeToChannelChanges(RealtimeRequest):
-    """Subscribe to all changes in channels."""
+class SubscribeToChannelChangesRaw(RealtimeRequest):
+    """
+    Subscribe to all messages in the given channel.
+
+    Passes the raw message object to the callback.
+
+    """
 
     @staticmethod
     def _get_request_msg(msg_id, user_id):
@@ -281,11 +292,7 @@ class SubscribeToChannelChanges(RealtimeRequest):
     def _wrap(callback):
         def fn(msg):
             payload = msg['fields']['args']
-            if payload[0] == 'removed':
-                return  # Nothing else to do - channel has just been deleted.
-            channel_id = payload[1]['_id']
-            channel_type = payload[1]['t']
-            return callback(channel_id, channel_type)
+            return callback(payload)
         return fn
 
     @classmethod
@@ -295,6 +302,21 @@ class SubscribeToChannelChanges(RealtimeRequest):
         msg = cls._get_request_msg(msg_id, user_id)
         await dispatcher.create_subscription(msg, msg_id, cls._wrap(callback))
         return msg_id  # Return the ID to allow for later unsubscription.
+
+
+class SubscribeToChannelChanges(SubscribeToChannelChangesRaw):
+    """Subscribe to all changes in channels."""
+
+    @staticmethod
+    def _wrap(callback):
+        def fn(msg):
+            payload = msg['fields']['args']
+            if payload[0] == 'removed':
+                return  # Nothing else to do - channel has just been deleted.
+            channel_id = payload[1]['_id']
+            channel_type = payload[1]['t']
+            return callback(channel_id, channel_type)
+        return fn
 
 
 class Unsubscribe(RealtimeRequest):
