@@ -77,6 +77,8 @@ class Login(RealtimeRequest):
 
     @staticmethod
     def _parse(response):
+        if "error" in response:
+            raise RuntimeError(response['error']['reason'])
         return response['result']['id']
 
     @classmethod
