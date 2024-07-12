@@ -110,9 +110,9 @@ Like `RocketChat.subscribe_to_channel_changes` except the callback gets passed t
 
 Like `RocketChat.subscribe_to_channel_messages` except the callback gets passed the raw message object coming from the API.
 
-#### `RocketChat.get_channels_raw(callback)`
+#### `RocketChat.get_channels_raw()`
 
-Like `RocketChat.get_channels` except the callback gets passed the list of raw channel objects coming from the API.
+Like `RocketChat.get_channels` except the method returns the list of raw channel objects coming from the API.
 
 #### `RocketChat.unsubscribe(subscription_id)`
 
