@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 import json
 from typing import Any
 
@@ -60,7 +61,9 @@ class Dispatcher:
         elif parsed['msg'] == 'changed':  # Subscription update.
             stream_name = parsed['collection']
             if stream_name in self._callbacks:
-                self._callbacks[stream_name](parsed)
+                result = self._callbacks[stream_name](parsed)
+                if inspect.isawaitable(result):
+                    await result
         elif parsed['msg'] in ['ready', 'connected', 'added', 'updated',
                                'nosub']:
             return  # Nothing to do.
