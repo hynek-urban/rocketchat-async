@@ -87,8 +87,11 @@ class Login(RealtimeRequest):
         return cls._parse(response)
 
 
-class GetChannels(RealtimeRequest):
-    """Get a list of channels user is currently member of."""
+class GetChannelsRaw(RealtimeRequest):
+    """Get a list of channels user is currently member of.
+
+    Returns the complete channel objects.
+    """
 
     @staticmethod
     def _get_request_msg(msg_id):
@@ -101,8 +104,7 @@ class GetChannels(RealtimeRequest):
 
     @staticmethod
     def _parse(response):
-        # Return channel IDs and channel types.
-        return [(r['_id'], r['t']) for r in response['result']]
+        return response['result']
 
     @classmethod
     async def call(cls, dispatcher):
@@ -110,6 +112,18 @@ class GetChannels(RealtimeRequest):
         msg = cls._get_request_msg(msg_id)
         response = await dispatcher.call_method(msg, msg_id)
         return cls._parse(response)
+
+
+class GetChannels(GetChannelsRaw):
+    """Get a list of channels user is currently member of.
+
+    Returns a list of (channel id, channel type) pairs.
+    """
+
+    @classmethod
+    def _parse(cls, response):
+        # Return channel IDs and channel types.
+        return [(r['_id'], r['t']) for r in super()._parse(response)]
 
 
 class SendMessage(RealtimeRequest):
@@ -190,8 +204,11 @@ class SendTypingEvent(RealtimeRequest):
         await dispatcher.call_method(msg, msg_id)
 
 
-class SubscribeToChannelMessages(RealtimeRequest):
-    """Subscribe to all messages in the given channel."""
+class SubscribeToChannelMessagesRaw(RealtimeRequest):
+    """Subscribe to all messages in the given channel.
+
+    Passes the raw message object to the callback.
+    """
 
     @staticmethod
     def _get_request_msg(msg_id, channel_id):
@@ -211,6 +228,26 @@ class SubscribeToChannelMessages(RealtimeRequest):
     @staticmethod
     def _wrap(callback):
         def fn(msg):
+            event = msg["fields"]["args"][0]  # TODO: This looks suspicious.
+            return callback(event)
+
+        return fn
+
+    @classmethod
+    async def call(cls, dispatcher, channel_id, callback):
+        # TODO: document the expected interface of the callback.
+        msg_id = cls._get_new_id()
+        msg = cls._get_request_msg(msg_id, channel_id)
+        await dispatcher.create_subscription(msg, msg_id, cls._wrap(callback))
+        return msg_id  # Return the ID to allow for later unsubscription.
+
+
+class SubscribeToChannelMessages(SubscribeToChannelMessagesRaw):
+    """Subscribe to all messages in the given channel."""
+
+    @staticmethod
+    def _wrap(callback):
+        def fn(msg):
             event = msg['fields']['args'][0]  # TODO: This looks suspicious.
             msg_id = event['_id']
             channel_id = event['rid']
@@ -223,14 +260,6 @@ class SubscribeToChannelMessages(RealtimeRequest):
             return callback(channel_id, sender_id, msg_id, thread_id, msg,
                             qualifier, unread, repeated)
         return fn
-
-    @classmethod
-    async def call(cls, dispatcher, channel_id, callback):
-        # TODO: document the expected interface of the callback.
-        msg_id = cls._get_new_id()
-        msg = cls._get_request_msg(msg_id, channel_id)
-        await dispatcher.create_subscription(msg, msg_id, cls._wrap(callback))
-        return msg_id  # Return the ID to allow for later unsubscription.
 
 
 class SubscribeToChannelChanges(RealtimeRequest):
