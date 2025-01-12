@@ -31,10 +31,10 @@ class Dispatcher:
             await self._websocket.send(json.dumps(msg))
             return await fut
 
-    async def create_subscription(self, msg, msg_id, callback):
+    async def create_subscription(self, msg, callback):
         if self._verbose:
             print(f'Outgoing: {msg}')
-        self._callbacks[msg['name']] = callback
+        self._callbacks[msg['params'][0]] = callback # Room ID
         await self._websocket.send(json.dumps(msg))
 
     async def _process_incoming(self):
@@ -58,7 +58,7 @@ class Dispatcher:
                 self._futures[msg_id].set_result(parsed)
                 del self._futures[msg_id]
         elif parsed['msg'] == 'changed':  # Subscription update.
-            stream_name = parsed['collection']
+            stream_name = parsed['fields']['eventName'] # Room ID
             if stream_name in self._callbacks:
                 self._callbacks[stream_name](parsed)
         elif parsed['msg'] in ['ready', 'connected', 'added', 'updated',

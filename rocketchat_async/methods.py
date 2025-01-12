@@ -275,7 +275,7 @@ class SubscribeToChannelMessagesRaw(RealtimeRequest):
         # TODO: document the expected interface of the callback.
         msg_id = cls._get_new_id()
         msg = cls._get_request_msg(msg_id, channel_id)
-        await dispatcher.create_subscription(msg, msg_id, cls._wrap(callback))
+        await dispatcher.create_subscription(msg, cls._wrap(callback))
         return msg_id  # Return the ID to allow for later unsubscription.
 
 
