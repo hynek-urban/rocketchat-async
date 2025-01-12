@@ -1,7 +1,6 @@
 import hashlib
 import time
 
-
 class RealtimeRequest:
     """Method call or subscription in the RocketChat realtime API."""
     _max_id = 0
@@ -158,8 +157,37 @@ class SendMessage(RealtimeRequest):
     async def call(cls, dispatcher, msg_text, channel_id, thread_id=None):
         msg_id = cls._get_new_id()
         msg = cls._get_request_msg(msg_id, channel_id, msg_text, thread_id)
+        # print(msg)
         await dispatcher.call_method(msg, msg_id)
+        return msg["params"][0]["_id"]
 
+class UpdateMessage(RealtimeRequest):
+    """Update a sent message"""
+
+    @staticmethod
+    def _get_request_msg(msg_id, orig_msg_id, channel_id, msg_text, thread_id=None):
+        msg = {
+            "msg": "method",
+            "method": "updateMessage",
+            "id": msg_id,
+            "params": [
+                {
+                    "_id": orig_msg_id,
+                    "rid": channel_id,
+                    "msg": msg_text
+                }
+            ]
+        }
+        if thread_id is not None:
+            msg["params"][0]["tmid"] = thread_id
+        return msg
+
+    @classmethod
+    async def call(cls, dispatcher, msg_text, orig_msg_id, channel_id, thread_id=None):
+        msg_id = cls._get_new_id()
+        msg = cls._get_request_msg(msg_id, orig_msg_id, channel_id, msg_text, thread_id)
+        # print(msg)
+        await dispatcher.call_method(msg, msg_id)
 
 class SendReaction(RealtimeRequest):
     """Send a reaction to a specific message."""
@@ -187,16 +215,15 @@ class SendTypingEvent(RealtimeRequest):
     """Send the `typing` event to a channel."""
 
     @staticmethod
-    def _get_request_msg(msg_id, channel_id, username, thread_id=None):
+    def _get_request_msg(msg_id, is_typing, channel_id, username, thread_id=None):
         msg = {
             "msg": "method",
             "method": "stream-notify-room",
             "id": msg_id,
             "params": [
-                f'{channel_id}/user-activity',
+                f'{channel_id}/typing',
                 username,
-                ["user-typing"],
-                {}
+                is_typing
             ]
         }
         if(thread_id):
@@ -204,9 +231,11 @@ class SendTypingEvent(RealtimeRequest):
         return msg
 
     @classmethod
-    async def call(cls, dispatcher, channel_id, username, thread_id=None):
+    async def call(cls, dispatcher, is_typing, channel_id, username, thread_id=None):
         msg_id = cls._get_new_id()
-        msg = cls._get_request_msg(msg_id, channel_id, username, thread_id)
+        is_typing = bool(is_typing)
+        msg = cls._get_request_msg(msg_id, is_typing, channel_id, username, thread_id)
+        # print(msg)
         await dispatcher.call_method(msg, msg_id)
 
 

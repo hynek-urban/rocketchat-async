@@ -5,7 +5,7 @@ from rocketchat_async.dispatcher import Dispatcher
 from rocketchat_async.methods import Connect, Login, Resume, GetChannels, GetChannelsRaw,\
         SendMessage, SendReaction, SendTypingEvent, SubscribeToChannelMessages,\
         SubscribeToChannelMessagesRaw, SubscribeToChannelChanges, SubscribeToChannelChangesRaw,\
-        Unsubscribe
+        Unsubscribe, UpdateMessage
 
 
 class RocketChat:
@@ -20,7 +20,7 @@ class RocketChat:
     def __init__(self):
         self.user_id = None
         self.username = None
-        self._dispatcher = Dispatcher(verbose=False)
+        self._dispatcher = Dispatcher(verbose=True)
 
     async def start(self, address, username, password):
         ws_connected = asyncio.get_event_loop().create_future()
@@ -105,15 +105,20 @@ class RocketChat:
 
     async def send_message(self, text, channel_id, thread_id=None):
         """Send a text message to a channel."""
-        await SendMessage.call(self._dispatcher, text, channel_id, thread_id)
+        sent_msg_id = await SendMessage.call(self._dispatcher, text, channel_id, thread_id)
+        return sent_msg_id
+
+    async def update_message(self, text, orig_msg_id ,channel_id, thread_id=None):
+        """Update a sent text message"""
+        await UpdateMessage.call(self._dispatcher, text, orig_msg_id, channel_id, thread_id)
 
     async def send_reaction(self, orig_msg_id, emoji):
         """Send a reaction to a specific message."""
         await SendReaction.call(self._dispatcher, orig_msg_id, emoji)
 
-    async def send_typing_event(self, channel_id, thread_id=None):
+    async def send_typing_event(self, is_typing, channel_id, thread_id=None):
         """Send the `typing` event to a channel."""
-        await SendTypingEvent.call(self._dispatcher, channel_id, self.username, thread_id)
+        await SendTypingEvent.call(self._dispatcher, is_typing, channel_id, self.username, thread_id)
 
     async def subscribe_to_channel_messages(self, channel_id, callback):
         """
