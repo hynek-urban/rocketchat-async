@@ -16,5 +16,5 @@ setup(
     packages=["rocketchat_async"],
     package_dir={"rocketchat_async": "rocketchat_async"},
     python_requires=">=3.7",
-    install_requires=["websockets==10.4"],
+    install_requires=["websockets==10.4", "dacite==1.8.1"],
 )

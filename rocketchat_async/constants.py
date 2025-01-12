@@ -12,7 +12,8 @@ class MessageQualifier(str, Enum):
 class ChannelQualifier(str, Enum):
     """Lists special message types."""
     DIRECT_MESSAGE = "d"
-    PRIVATE = "p"
+    PRIVATE_CHANNEL = "p"
+    PUBLIC_CHANNEL = "c"
 
 
 class Emoji(str, Enum):

@@ -4,8 +4,8 @@ import websockets
 from rocketchat_async.dispatcher import Dispatcher
 from rocketchat_async.methods import Connect, Login, Resume, GetChannels, GetChannelsRaw,\
         SendMessage, SendReaction, SendTypingEvent, SubscribeToChannelMessages,\
-        SubscribeToChannelMessagesRaw, SubscribeToChannelChanges, SubscribeToChannelChangesRaw,\
-        Unsubscribe, UpdateMessage
+        SubscribeToChannelMessagesParsed, SubscribeToChannelMessagesRaw, SubscribeToChannelChanges,\
+        SubscribeToChannelChangesRaw, Unsubscribe, UpdateMessage
 
 
 
@@ -131,6 +131,21 @@ class RocketChat:
         sub_id = await SubscribeToChannelMessages.call(self._dispatcher,
                                                        channel_id, callback)
         return sub_id
+    
+    async def subscribe_to_channel_messages_parsed(self, channel_id, callback):
+        """
+        Subscribe to all messages in the given channel.
+
+        The callback is passed the full message object as dataclass as provided by the API.
+        
+        Returns the subscription ID.
+
+        """
+        sub_id = await SubscribeToChannelMessagesParsed.call(self._dispatcher,
+                                                       channel_id, callback)
+        return sub_id
+    
+    
 
     async def subscribe_to_channel_messages_raw(self, channel_id, callback):
         """

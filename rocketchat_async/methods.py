@@ -1,5 +1,7 @@
 import hashlib
 import time
+from rocketchat_async.response_dataclass import ReceivedMessage
+from dacite import from_dict
 
 class RealtimeRequest:
     """Method call or subscription in the RocketChat realtime API."""
@@ -278,6 +280,16 @@ class SubscribeToChannelMessagesRaw(RealtimeRequest):
         await dispatcher.create_subscription(msg, cls._wrap(callback))
         return msg_id  # Return the ID to allow for later unsubscription.
 
+
+class SubscribeToChannelMessagesParsed(SubscribeToChannelMessagesRaw):
+    """Subscribe to all messages in the given channel."""
+    @staticmethod
+    def _wrap(callback):
+        def fn(msg):
+            event= msg['fields']['args'][0]     # TODO: This looks suspicious, why 0?
+            msg_dataclass = from_dict(ReceivedMessage, event)
+            return callback(msg_dataclass)
+        return fn
 
 class SubscribeToChannelMessages(SubscribeToChannelMessagesRaw):
     """Subscribe to all messages in the given channel."""

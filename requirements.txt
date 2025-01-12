@@ -1,1 +1,2 @@
 websockets==10.4
+dacite=1.8.1
