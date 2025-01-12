@@ -8,6 +8,7 @@ from rocketchat_async.methods import Connect, Login, Resume, GetChannels, GetCha
         Unsubscribe, UpdateMessage
 
 
+
 class RocketChat:
     """Represents a connection to RocketChat, exposing the API."""
 
@@ -17,10 +18,10 @@ class RocketChat:
     class ConnectCallFailed(Exception):
         pass
 
-    def __init__(self):
+    def __init__(self, verbose=False):
         self.user_id = None
         self.username = None
-        self._dispatcher = Dispatcher(verbose=True)
+        self._dispatcher = Dispatcher(verbose=verbose)
 
     async def start(self, address, username, password):
         ws_connected = asyncio.get_event_loop().create_future()
