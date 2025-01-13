@@ -91,6 +91,7 @@ class User:
     name: str
     username: str
 
+# TODO: this only works for parsing received message. Other events (e.g. user join channel) will not work, need to be generalized
 @dataclass
 class ReceivedMessage:
     _id: str
