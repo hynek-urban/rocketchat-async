@@ -1,3 +1,10 @@
+# ⚠️ DEPRECATED
+
+> **Rocket.Chat's RealTime API is [deprecated](https://developer.rocket.chat/apidocs/realtimeapi).**
+> As a result, I will not maintain this package going forward.
+
+_(If I wrote this library today, I'd probably do it very differently :) I suggest you do not take inspiration from it.)_
+
 # rocketchat-async
 
 asyncio-based Python wrapper for the Rocket.Chat Realtime API.
