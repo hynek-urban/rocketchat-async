@@ -92,7 +92,7 @@ The provided callback should accept eight arguments: `channel_id`,
 message is a system message about the user being removed from
 the channel.  The `repeated` flag assists in distinguishing 
 whether the message has been received again as a result of 
-thread replies, or if it is a new message post.
+thread replies or reactions, or if it is a new message post.
 
 #### `RocketChat.subscribe_to_channel_changes(callback)`
 

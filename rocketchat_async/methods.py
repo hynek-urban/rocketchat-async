@@ -264,7 +264,7 @@ class SubscribeToChannelMessages(SubscribeToChannelMessagesRaw):
             msg = event['msg']
             qualifier = event.get('t')
             unread = event.get('unread', False)
-            repeated = bool(event.get('replies'))
+            repeated = bool(event.get('replies')) or bool(event.get('reactions'))
             return callback(channel_id, sender_id, msg_id, thread_id, msg,
                             qualifier, unread, repeated)
         return fn
